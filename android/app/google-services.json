@@ -1,0 +1,82 @@
+{
+  "project_info": {
+    "project_number": "323052354842",
+    "project_id": "peterattendance-fb858",
+    "storage_bucket": "peterattendance-fb858.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:323052354842:android:b73748cff93fcc20b440a3",
+        "android_client_info": {
+          "package_name": "com.example.attendance"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "323052354842-ukeucipjmg9r1d6s9lqmbpg448kv5ika.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDsS_0AbCIy2cBkkeZ4UwIpyG3_WnfekbE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "323052354842-ukeucipjmg9r1d6s9lqmbpg448kv5ika.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "323052354842-5kljbhrqsmbdc5gd0gqopf21lq0pt3pc.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.peterAttendaceAdmin"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:323052354842:android:9707342deabda59bb440a3",
+        "android_client_info": {
+          "package_name": "com.example.peter_attendace_admin"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "323052354842-ukeucipjmg9r1d6s9lqmbpg448kv5ika.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDsS_0AbCIy2cBkkeZ4UwIpyG3_WnfekbE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "323052354842-ukeucipjmg9r1d6s9lqmbpg448kv5ika.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "323052354842-5kljbhrqsmbdc5gd0gqopf21lq0pt3pc.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.peterAttendaceAdmin"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

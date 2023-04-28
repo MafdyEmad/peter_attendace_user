@@ -1,0 +1,207 @@
+import 'dart:convert';
+import 'package:attendance/pages/home_page/home_page_cubit/home_screen_cubit.dart';
+import 'package:http/http.dart' as http;
+import 'package:attendance/constant/constants.dart';
+import 'package:attendance/models/mail_model.dart';
+import 'package:attendance/pages/sign_in_page/sign_in_cubit/sign_in_cubit.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'mails_page_cubit_screen_states.dart';
+
+class MailsScreenCubit extends Cubit<MailsScreenState> {
+  final context;
+  MailsScreenCubit(this.context) : super(AttendanceScreenInitState());
+
+  static MailsScreenCubit get(context) => BlocProvider.of(context);
+
+  DateTime vacatioFromDAte = DateTime.now();
+  DateTime vacatioToDAte = DateTime.now();
+
+  Stream<List<Mail>>? getData(uid) {
+    try {
+      return FirebaseFirestore.instance
+          .collection("employees")
+          .doc("$uid")
+          .collection("mails")
+          .orderBy("send date", descending: true)
+          .snapshots()
+          .map((snapshot) =>
+              snapshot.docs.map((doc) => Mail.fromJson(doc.data())).toList());
+    } catch (e) {
+      print("error");
+    }
+  }
+
+  void getVacation({from, to}) {
+    vacatioFromDAte = from;
+    vacatioToDAte = to;
+    emit(MailScreenGetVacationState());
+  }
+
+  void cancelVacation() {
+    vacatioFromDAte = DateTime.now();
+    vacatioToDAte = DateTime.now();
+    // vacatioFromDAte = DateTime.utc(0);
+    // vacatioToDAte = DateTime.utc(0);
+    emit(MailScreenCancelVacationState());
+  }
+
+  Future<void> sendNotification({title, body}) async {
+    try {
+      await http.post(
+        Uri.parse("https://fcm.googleapis.com/fcm/send"),
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization":
+              "key=AAAASzdrvRo:APA91bE1BFrA8ZWLsulKdT8S028xuy8iN3SopJvF368Cwz8IODzOc8OmdTmU0dPxmQREj1dRlM6zC6wt9E0Iu8--rPC_cv-4Wy4ZTDNK8v29_htiuGe6wCReRHbcdtNy-KTcNwlwTeOd",
+        },
+        body: jsonEncode(
+          {
+            "to": "/topics/admin",
+            "priority": "high",
+            "notification": {
+              "title": "$title",
+              "body": "$body",
+              "subtitle": "",
+            }
+          },
+        ),
+      );
+    } catch (e) {
+      rethrow;
+    }
+    // try {
+    //   final admins =
+    //       await FirebaseFirestore.instance.collection("admins").get();
+
+    //   List<QueryDocumentSnapshot<Map<String, dynamic>>> adminsTokens =
+    //       admins.docs;
+    //   for (QueryDocumentSnapshot<Map<String, dynamic>> token in adminsTokens) {
+    //     if (token.id == "mails") {
+    //       return;
+    //     }
+    //     await http.post(
+    //       Uri.parse("https://fcm.googleapis.com/fcm/send"),
+    //       headers: {
+    //         "Content-Type": "application/json",
+    //         "Authorization":
+    //             "key=AAAASzdrvRo:APA91bE1BFrA8ZWLsulKdT8S028xuy8iN3SopJvF368Cwz8IODzOc8OmdTmU0dPxmQREj1dRlM6zC6wt9E0Iu8--rPC_cv-4Wy4ZTDNK8v29_htiuGe6wCReRHbcdtNy-KTcNwlwTeOd",
+    //       },
+    //       body: jsonEncode(
+    //         {
+    //           "to": "${token.get("token")}",
+    //           "priority": "high",
+    //           "notification": {
+    //             "title": "$title",
+    //             "body": "$body",
+    //             "subtitle": "",
+    //           }
+    //         },
+    //       ),
+    //     );
+    //   }
+
+    // } catch (e) {
+    //   rethrow;
+    // }
+  }
+
+  Future senMailToAdmin(context, {dateFrom, dateTo, content, uid}) async {
+    if (await Connectivity().checkConnectivity() != ConnectivityResult.none) {
+      try {
+        emit(MailScreenSendMailLoadingState());
+        final adminDuc = FirebaseFirestore.instance
+            .collection("admins")
+            .doc("mails")
+            .collection("mails")
+            .doc();
+
+        final userDoc = FirebaseFirestore.instance
+            .collection("employees")
+            .doc(LoginScreenCubit.get(context).getCurrentUser()?.uid)
+            .collection("mails")
+            .doc();
+        await adminDuc.set(Mail(
+                senderName:
+                    await HomeScreenCubit.get(context).myBox.get("name"),
+                isApproved: "waiting",
+                adminDocUid: adminDuc.id,
+                userDocUid: userDoc.id,
+                vacationToDate: dateTo,
+                vacationFromDate: dateFrom,
+                content: content,
+                sendDate: DateTime.now(),
+                from: uid,
+                to: "admin")
+            .toJson());
+
+        await userDoc.set(Mail(
+          senderName: await HomeScreenCubit.get(context).myBox.get("name"),
+          isApproved: "waiting",
+          adminDocUid: adminDuc.id,
+          userDocUid: userDoc.id,
+          vacationToDate: dateTo,
+          vacationFromDate: dateFrom,
+          content: content,
+          sendDate: DateTime.now(),
+          from: uid,
+          to: "admin",
+        ).toJson());
+
+        await sendNotification(
+            title: HomeScreenCubit.get(context).myBox.get("name"),
+            body: "$content");
+
+        // await FirebaseFirestore.instance
+        //     .collection("admin")
+        //     .doc("ccU8C0XbkiDxwEMhbpF2")
+        //     .collection("mails")
+        //     .add(Mail(
+        //             isApproved: "waiting",
+        //             vacationToDate: dateTo,
+        //             vacationFromDate: dateFrom,
+        //             content: content,
+        //             sendDate: DateTime.now(),
+        //             from: uid,
+        //             to: "ccU8C0XbkiDxwEMhbpF2")
+        //         .toJson());
+        // await FirebaseFirestore.instance
+        //     .collection("employees")
+        //     .doc(LoginScreenCubit.get(context).getCurrentUser()?.uid)
+        //     .collection("mails")
+        //     .add(Mail(
+        //             isApproved: "waiting",
+        //             vacationToDate: dateTo,
+        //             vacationFromDate: dateFrom,
+        //             content: content,
+        //             sendDate: DateTime.now(),
+        //             from: uid,
+        //             to: "ccU8C0XbkiDxwEMhbpF2")
+        //         .toJson());
+
+        emit(MailScreenSendMailSuccessState());
+      } catch (e) {
+        emit(MailScreenSendMailFailedState());
+      }
+    } else {
+      Navigator.pop(context);
+      ScaffoldMessenger.of(context).showSnackBar(
+        mySnackBar(
+          context,
+          content: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: const [
+              Text('No internet connection'),
+              Icon(
+                Icons.wifi,
+                color: Colors.white,
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+  }
+}
