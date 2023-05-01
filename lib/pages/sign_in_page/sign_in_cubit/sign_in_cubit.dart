@@ -69,7 +69,7 @@ class LoginScreenCubit extends Cubit<LoginScreenStates> {
         .doc(getCurrentUser()?.uid)
         .get()
         .then((value) async {
-      // await myBox.put("name", value.get("name"));
+      await myBox.put("name", value.get("name"));
     }).catchError((e) => throw e);
   }
 
