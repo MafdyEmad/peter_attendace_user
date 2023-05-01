@@ -1,6 +1,7 @@
 import 'package:attendance/component/alert_dialog.dart';
 import 'package:attendance/component/my_text_form_field.dart';
 import 'package:attendance/constant/constants.dart';
+
 import 'package:attendance/pages/main_page/main_screen.dart';
 import 'package:attendance/pages/sign_in_page/sign_in_cubit/sign_in_cubit.dart';
 import 'package:attendance/pages/sign_in_page/sign_in_cubit/sign_in_state.dart';
@@ -68,7 +69,7 @@ class LoginPage extends StatelessWidget {
           backgroundColor: primaryColor,
           key: _scaffoldKey,
           body: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 35, vertical: 50),
+            padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Form(
               key: _formKey,
               child: Column(
@@ -81,10 +82,6 @@ class LoginPage extends StatelessWidget {
                       foreground: Paint()
                         ..shader = const LinearGradient(
                           colors: primaryGradiantColor,
-                          //  [
-                          //   Color.fromARGB(255, 62, 130, 224),
-                          //   Color.fromARGB(255, 154, 135, 228)
-                          // ],
                           begin: Alignment.topRight,
                           end: Alignment.bottomLeft,
                         ).createShader(
@@ -93,113 +90,62 @@ class LoginPage extends StatelessWidget {
                     ),
                   ),
                   Column(
-                    // crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10),
-                        clipBehavior: Clip.antiAliasWithSaveLayer,
-                        decoration: BoxDecoration(
-                          color: secondaryColor,
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        height: 60,
-                        width: double.infinity,
-                        child: MyTextFormField(
-                          controller: _emailController,
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return "please enter an email";
-                            } else {
-                              return null;
-                            }
-                          },
-                          hintText: "User Name",
-                          hintStyle: const TextStyle(
-                            fontSize: secondaryFontSize,
-                            color: secondaryTextColor,
-                          ),
+                      MyTextFormField(
+                        filled: true,
+                        fillColor: secondaryColor,
+                        controller: _emailController,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return "please enter an email";
+                          } else {
+                            return null;
+                          }
+                        },
+                        hintText: "User Name",
+                        hintStyle: const TextStyle(
+                          fontSize: secondaryFontSize,
+                          color: secondaryTextColor,
                         ),
                       ),
                       const SizedBox(
                         height: 20,
                       ),
-                      Container(
-                        clipBehavior: Clip.antiAliasWithSaveLayer,
-                        decoration: BoxDecoration(
-                          color: secondaryColor,
-                          borderRadius: BorderRadius.circular(8),
+                      MyTextFormField(
+                        filled: true,
+                        fillColor: secondaryColor,
+                        suffixIcon: GestureDetector(
+                          onTap: () =>
+                              LoginScreenCubit.get(context).showPassword(),
+                          child: LoginScreenCubit.get(context).isPasswordVisible
+                              ? const Icon(
+                                  Icons.visibility_rounded,
+                                  color: switchColor,
+                                )
+                              : const Icon(
+                                  Icons.visibility_off,
+                                  color: secondaryTextColor,
+                                ),
                         ),
-                        padding: const EdgeInsets.symmetric(horizontal: 10),
-                        height: 60,
-                        width: double.infinity,
-                        child: MyTextFormField(
-                          suffixIcon: GestureDetector(
-                            onTap: () =>
-                                LoginScreenCubit.get(context).showPassword(),
-                            child:
-                                LoginScreenCubit.get(context).isPasswordVisible
-                                    ? const Icon(
-                                        Icons.visibility_rounded,
-                                        color: switchColor,
-                                      )
-                                    : const Icon(
-                                        Icons.visibility_off,
-                                        color: secondaryTextColor,
-                                      ),
-
-                            // IconButton(
-                            //   icon: LoginScreenCubit.get(context)
-                            //           .isPasswordVisible
-                            //       ? const Icon(
-                            //           Icons.visibility_rounded,
-                            //           color: switchColor,
-                            //         )
-                            //       : const Icon(
-                            //           Icons.visibility_off,
-                            //           color: secondaryTextColor,
-                            //         ),
-                            //   onPressed: () {},
-                            // ),
-                          ),
-                          obscureText:
-                              LoginScreenCubit.get(context).isPasswordVisible
-                                  ? false
-                                  : true,
-                          controller: _passwordController,
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return "Please enter a password";
-                            } else {
-                              return null;
-                            }
-                          },
-                          hintText: "Password",
-                          hintStyle: const TextStyle(
-                            fontSize: secondaryFontSize,
-                            color: secondaryTextColor,
-                          ),
+                        obscureText:
+                            LoginScreenCubit.get(context).isPasswordVisible
+                                ? false
+                                : true,
+                        controller: _passwordController,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return "Please enter a password";
+                          } else {
+                            return null;
+                          }
+                        },
+                        hintText: "Password",
+                        hintStyle: const TextStyle(
+                          fontSize: secondaryFontSize,
+                          color: secondaryTextColor,
                         ),
                       ),
-                      // TextButton(
-                      //   onPressed: () {},
-                      //   child: Text(
-                      //     'Forgot password?',
-                      //     style: TextStyle(
-                      //       foreground: Paint()
-                      //         ..shader = const LinearGradient(
-                      //           colors: primaryGradiantColor,
-                      //           // colors: [
-                      //           //   Color.fromARGB(255, 62, 130, 224),
-                      //           //   Color.fromARGB(255, 154, 135, 228)
-                      //           // ],
-                      //           begin: Alignment.topRight,
-                      //           end: Alignment.bottomLeft,
-                      //         ).createShader(
-                      //           const Rect.fromLTWH(0.0, 0.0, 200.0, 100.0),
-                      //         ),
-                      //     ),
-                      //   ),
-                      // ),
+
                       const SizedBox(
                         height: 50,
                       ),
@@ -227,10 +173,6 @@ class LoginPage extends StatelessWidget {
                               decoration: const BoxDecoration(
                                 gradient: LinearGradient(
                                   colors: primaryGradiantColor,
-                                  // colors: [
-                                  //   Color.fromARGB(255, 62, 130, 224),
-                                  //   Color.fromARGB(255, 154, 135, 228)
-                                  // ],
                                   begin: Alignment.topRight,
                                   end: Alignment.bottomLeft,
                                 ),

@@ -194,7 +194,8 @@ class SalaryScreen extends StatelessWidget {
                   ),
                 );
               }
-              return const Center(child: CircularProgressIndicator());
+              return const Center(
+                  child: CircularProgressIndicator(color: switchColor));
             },
           ),
         ),
@@ -214,7 +215,7 @@ class SalaryScreen extends StatelessWidget {
                           color: primaryTextColor, fontSize: primaryFontSize),
                     ),
                     Text(
-                      "Total working hours : ${(snapshout.data!.get("total working hours") / 60).toInt()}:${snapshout.data!.get("total working hours") % 60}",
+                      "Total working hours : ${(snapshout.data!.get("total working hours") / 60).toInt()} : ${(snapshout.data!.get("total working hours") % 60).toInt()}",
                       style: const TextStyle(
                           color: primaryTextColor, fontSize: primaryFontSize),
                     ),

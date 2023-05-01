@@ -1,27 +1,5 @@
 import 'package:flutter/material.dart';
 
-// const myGradiantDark = LinearGradient(
-//   colors: [
-//     Color.fromARGB(255, 62, 130, 224),
-//     Color.fromARGB(255, 62, 130, 224),
-//     Color.fromARGB(255, 154, 135, 228),
-//     Color.fromARGB(255, 154, 135, 228),
-//   ],
-//   begin: Alignment.topRight,
-//   end: Alignment.bottomLeft,
-// );
-
-// const myGradiantLight = LinearGradient(
-//   colors: [
-//     Color.fromARGB(255, 140, 50, 151),
-//     Color.fromARGB(255, 140, 50, 151),
-//     Color.fromARGB(237, 154, 70, 124),
-//     Color.fromARGB(237, 154, 70, 124),
-//   ],
-//   begin: Alignment.topRight,
-//   end: Alignment.bottomLeft,
-// );
-
 const Color primaryColor = Color.fromARGB(255, 14, 15, 26);
 const Color secondaryColor = Color.fromARGB(255, 22, 24, 35);
 const Color primaryTextColor = Colors.white;

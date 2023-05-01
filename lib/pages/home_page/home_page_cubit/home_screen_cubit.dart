@@ -6,12 +6,12 @@ import 'package:attendance/pages/home_page/home_page_cubit/home_screen_states.da
 import 'package:attendance/pages/sign_in_page/sign_in_cubit/sign_in_cubit.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:intl/intl.dart';
+import 'package:ntp/ntp.dart';
 
 class HomeScreenCubit extends Cubit<HomeScreenState> {
   final context;
@@ -114,6 +114,7 @@ class HomeScreenCubit extends Cubit<HomeScreenState> {
 
 //*****************************************************************************
   Future clockIn(context, {required uid}) async {
+    final time = await NTP.now();
     final docUid = FirebaseFirestore.instance
         .collection("employees")
         .doc("$uid")
@@ -124,99 +125,66 @@ class HomeScreenCubit extends Cubit<HomeScreenState> {
       Attendance(
         docUid: docUid.id,
         date: "${DateTime.now().month}, ${DateTime.now().year}",
-        isClockIn: true,
         clockInLocation: GeoPoint(ltitude, longitude),
-        clockInDate: DateTime.now(),
+        clockInDate: time,
       ).toJson(),
     )
         .then((value) async {
-      ScaffoldMessenger.of(context).showSnackBar(
-        mySnackBar(
-          context,
-          content: const Center(
-            child: Text(
-              'You are in',
-              style: TextStyle(
-                color: primaryTextColor,
-                fontSize: secondaryFontSize,
+      await FirebaseFirestore.instance
+          .collection("employees")
+          .doc(LoginScreenCubit.get(context).getCurrentUser()!.uid)
+          .update({"is in": true}).then((value) {
+        emit(HomeScreenClockStateSuccess());
+        ScaffoldMessenger.of(context).showSnackBar(
+          mySnackBar(
+            context,
+            content: const Center(
+              child: Text(
+                'You are in',
+                style: TextStyle(
+                  color: primaryTextColor,
+                  fontSize: secondaryFontSize,
+                ),
               ),
             ),
           ),
-        ),
-      );
-      await write(true);
+        );
+      }).catchError((e) {
+        emit(HomeScreenClockStateFailed());
+      });
+
       await myBox.put("docId", docUid.id).catchError((e) {
         print("box error");
       });
 
-      await myBox.put("clock in", DateTime.now()).catchError((e) {
+      await myBox.put("clock in", time).catchError((e) {
         print("box error");
       });
 
-      await myBox.put("clock out", null).catchError((e) {
-        print("box error");
-      });
-      myBox.put("workingHours", "--:--").catchError((e) {
-        print("box error");
-      });
-
-      emit(HomeScreenClockStateSuccess());
+      // await myBox.put("clock out", null).catchError((e) {
+      //   print("box error");
+      // });
+      // myBox.put("workingHours", "--:--").catchError((e) {
+      //   print("box error");
+      // });
     }).catchError((e) {
       emit(HomeScreenClockStateFailed());
     });
-
-    // await FirebaseFirestore.instance
-    //     .collection("employees")
-    //     .doc("$uid")
-    //     .collection("attendance")
-    //     .add(
-    //       Attendance(
-    //         docUid: "",
-    //         date: "${DateTime.now().month}, ${DateTime.now().year}",
-    //         isClockIn: true,
-    //         clockInLocation: GeoPoint(ltitude, longitude),
-    //         clockInDate: DateTime.now(),
-    //       ).toJson(),
-    //     )
-    //     .then((value) async {
-    //   ScaffoldMessenger.of(context).showSnackBar(
-    //     mySnackBar(
-    //       context,
-    //       content: const Center(
-    //         child: Text(
-    //           'You are in',
-    //           style: TextStyle(
-    //             color: primaryTextColor,
-    //             fontSize: secondaryFontSize,
-    //           ),
-    //         ),
-    //       ),
-    //     ),
-    //   );
-    //   await write(true);
-    //   await myBox.put("docId", value.id).catchError((e) {
-    //     print("box error");
-    //   });
-    //   await myBox.put("clock in", DateTime.now()).catchError((e) {
-    //     print("box error");
-    //   });
-    //   await myBox.put("clock out", null).catchError((e) {
-    //     print("box error");
-    //   });
-    //   myBox.put("workingHours", "--:--").catchError((e) {
-    //     print("box error");
-    //   });
-    //   emit(HomeScreenClockStateSuccess());
-    // }).catchError((e) {
-    //   emit(HomeScreenClockStateFailed());
-    // });
   }
 
 //*************************************************************
   Future clockOut(context, {required uid}) async {
+    final time = await NTP.now();
     emit(HomeScreenGetLocationStateLoading());
-    final _workingHours = DateTime.now()
-        .difference(DateTime.parse(myBox.get("clock in").toString()));
+
+    Duration _workingHours = time.difference(DateTime.parse(
+        myBox.get("clock in").toString())); ////////////////////////
+    _workingHours > Duration.zero
+        ? _workingHours = _workingHours
+        : _workingHours = Duration(
+            hours: _workingHours.inHours + 24,
+            minutes: _workingHours.inMinutes % 60);
+
     await FirebaseFirestore.instance
         .collection("employees")
         .doc("$uid")
@@ -226,45 +194,61 @@ class HomeScreenCubit extends Cubit<HomeScreenState> {
       "working hours":
           "${_workingHours.inHours}:${_workingHours.inMinutes.remainder(60)}",
       "clock out location": GeoPoint(ltitude, longitude),
-      "clock out date": DateTime.now(),
-      "is clock in": false,
+      "clock out date":
+          time ////////////////////////////////////////////////////
     }).then((value) async {
-      //emit(HomeScreenClockStateSuccess());
-      write(false);
-
-      await myBox.put("clock out", DateTime.now()).catchError((e) {
-        print("box error");
+      await FirebaseFirestore.instance
+          .collection("employees")
+          .doc(LoginScreenCubit.get(context).getCurrentUser()!.uid)
+          .update({"is in": false}).then((value) async {
+        await updateTotalWorkingHours(_workingHours).then((value) {
+          emit(HomeScreenClockStateSuccess());
+          Navigator.pop(context);
+          ScaffoldMessenger.of(context).showSnackBar(
+            mySnackBar(
+              context,
+              content: const Center(
+                child: Text(
+                  'You are out',
+                  style: TextStyle(
+                    color: primaryTextColor,
+                    fontSize: secondaryFontSize,
+                  ),
+                ),
+              ),
+            ),
+          );
+        }).catchError((e) {
+          emit(HomeScreenClockStateFailed());
+        });
+      }).catchError((e) {
+        emit(HomeScreenClockStateFailed());
       });
-      myBox
-          .put("workingHours",
-              "${_workingHours.inHours}:${_workingHours.inMinutes.remainder(60)}")
-          .then((value) async =>
-              await updateTotalWorkingHours(_workingHours).then(
-                (value) async {
-                  emit(HomeScreenClockStateSuccess());
-                  Navigator.pop(context);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    mySnackBar(
-                      context,
-                      content: const Center(
-                        child: Text(
-                          'You are out',
-                          style: TextStyle(
-                            color: primaryTextColor,
-                            fontSize: secondaryFontSize,
-                          ),
-                        ),
-                      ),
-                    ),
-                  );
-                },
-              ))
-          .catchError((e) {
-        print("box error");
-      });
+      // await myBox.put("clock out", DateTime.now()).catchError((e) {
+      //   print("box error");
+      // });
+      // myBox
+      //     .put("workingHours",
+      //         "${_workingHours.inHours}:${_workingHours.inMinutes.remainder(60)}")
+      //     .then((value) async =>
+      //         await updateTotalWorkingHours(_workingHours).then(
+      //           (value) async {},
+      //         ))
+      //     .catchError((e) {
+      //   print("box error");
+      // });
     }).catchError((e) {
       emit(HomeScreenClockStateFailed());
     });
+  }
+
+  Stream<DocumentSnapshot<Map<String, dynamic>>> getClocks() {
+    return FirebaseFirestore.instance
+        .collection("employees")
+        .doc(LoginScreenCubit.get(context).getCurrentUser()!.uid)
+        .collection("attendance")
+        .doc(myBox.get("docId"))
+        .snapshots();
   }
 
   Future getAllPermission(context) async {
@@ -353,10 +337,10 @@ class HomeScreenCubit extends Cubit<HomeScreenState> {
 
   Future clockInAndOut(context) async {
     if (await Connectivity().checkConnectivity() != ConnectivityResult.none) {
-      if (!read()) {
+      if (!await read()) {
         await clockIn(
             uid: LoginScreenCubit.get(context).getCurrentUser()?.uid, context);
-      } else if (read()) {
+      } else if (await read()) {
         clockOut(
             uid: LoginScreenCubit.get(context).getCurrentUser()?.uid, context);
       }
@@ -419,20 +403,27 @@ class HomeScreenCubit extends Cubit<HomeScreenState> {
     Navigator.pop(context);
   }
 
-  Future<void> write(bool isIN) async {
-    await myBox
-        .put("uid", FirebaseAuth.instance.currentUser?.uid.toString())
-        .catchError((e) {
-      print("box error");
-    });
+  // Future<void> write(bool isIN) async {
+  //   await myBox
+  //       .put("uid", FirebaseAuth.instance.currentUser?.uid.toString())
+  //       .catchError((e) {
+  //     print("box error");
+  //   });
+  // }
 
-    await myBox.put("isIn", isIN).catchError((e) {
-      print("box error");
-    });
+  Future<bool> read() async {
+    final result = await FirebaseFirestore.instance
+        .collection("employees")
+        .doc(LoginScreenCubit.get(context).getCurrentUser()!.uid)
+        .get();
+    return result.get("is in");
   }
 
-  bool read() {
-    return myBox.get("isIn", defaultValue: false);
+  Stream<DocumentSnapshot<Map<String, dynamic>>>? getDetails() {
+    return FirebaseFirestore.instance
+        .collection("employees")
+        .doc(LoginScreenCubit.get(context).getCurrentUser()!.uid)
+        .snapshots();
   }
 
   Future getSalary() async {
@@ -441,7 +432,7 @@ class HomeScreenCubit extends Cubit<HomeScreenState> {
         .doc(LoginScreenCubit.get(context).getCurrentUser()!.uid)
         .get();
 
-    return (doc.get("salary") / 60).round();
+    return (doc.get("salary") / 60);
   }
 
   Future getTotalWorkingHours() async {
@@ -450,6 +441,7 @@ class HomeScreenCubit extends Cubit<HomeScreenState> {
           .collection("employees")
           .doc(LoginScreenCubit.get(context).getCurrentUser()!.uid)
           .get();
+
       return doc.get("total working hours");
     } catch (e) {
       print("eeeeee $e");
@@ -462,16 +454,13 @@ class HomeScreenCubit extends Cubit<HomeScreenState> {
           .collection("employees")
           .doc(LoginScreenCubit.get(context).getCurrentUser()!.uid)
           .update({
-        "total working hours": time.inMinutes % 60 == 1
-            ? await getTotalWorkingHours().then((value) => value.toInt() + 1)
-            : await getTotalWorkingHours() + time.inMinutes
+        "total working hours": await getTotalWorkingHours() + time.inMinutes
       });
 
       await updateTotalSalary(
           salary: await getSalary(),
           workingHours: await getTotalWorkingHours());
     } catch (e) {
-      print("qwewqewqe");
       print(e);
     }
   }
@@ -502,7 +491,14 @@ class HomeScreenCubit extends Cubit<HomeScreenState> {
       await FirebaseFirestore.instance
           .collection("employees")
           .doc(LoginScreenCubit.get(context).getCurrentUser()!.uid)
-          .update({"total salary": salary * workingHours});
+          .update({"total salary": (salary * workingHours).round()});
     } catch (e) {}
+  }
+
+  Stream<DocumentSnapshot<Map<String, dynamic>>> isHasPermissionToLogin() {
+    return FirebaseFirestore.instance
+        .collection("employees")
+        .doc(LoginScreenCubit.get(context).getCurrentUser()!.uid)
+        .snapshots();
   }
 }

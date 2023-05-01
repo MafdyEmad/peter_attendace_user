@@ -10,12 +10,16 @@ class MyTextFormField extends StatelessWidget {
   final String? hintText;
   final bool obscureText;
   final suffixIcon;
+  final fillColor;
   final TextStyle? hintStyle;
+  final filled;
   final String? Function(String?)? validator;
 
   const MyTextFormField(
       {super.key,
       this.suffixIcon,
+      this.filled,
+      this.fillColor,
       this.obscureText = false,
       this.controller,
       this.labelText,
@@ -38,6 +42,8 @@ class MyTextFormField extends StatelessWidget {
         color: primaryTextColor,
       ),
       decoration: InputDecoration(
+        filled: filled,
+        fillColor: fillColor,
         suffixIcon: suffixIcon,
         floatingLabelBehavior: FloatingLabelBehavior.always,
         labelText: labelText,

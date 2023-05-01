@@ -30,7 +30,7 @@ class MailsScreen extends StatelessWidget {
             content: WillPopScope(
               onWillPop: LoginScreenCubit.get(context).onWillPop,
               child: const Center(
-                child: CircularProgressIndicator(),
+                child: CircularProgressIndicator(color: switchColor),
               ),
             ),
           );
@@ -168,7 +168,8 @@ class MailsScreen extends StatelessWidget {
                 ],
               );
             }
-            return const Center(child: CircularProgressIndicator());
+            return const Center(
+                child: CircularProgressIndicator(color: switchColor));
           },
         ),
         floatingActionButton: FloatingActionButton(

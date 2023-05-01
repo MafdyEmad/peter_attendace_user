@@ -32,9 +32,13 @@ class LoginScreenCubit extends Cubit<LoginScreenStates> {
           .then(
         (value) {
           saveTheToken(uid: value.user!.uid.toString())
-              .then((value) => emit(LoginScreenStateSuccess()))
+              .then((value) => checkIfLoggedIn()
+                      .then((value) => emit(LoginScreenStateSuccess()))
+                      .catchError((e) {
+                    LoginScreenStateFailed(error: "Error");
+                  }))
               .catchError((e) {
-            print(e);
+            LoginScreenStateFailed(error: "Error");
           });
           saveUser();
         },
@@ -65,7 +69,7 @@ class LoginScreenCubit extends Cubit<LoginScreenStates> {
         .doc(getCurrentUser()?.uid)
         .get()
         .then((value) async {
-      await myBox.put("name", value.get("name"));
+      // await myBox.put("name", value.get("name"));
     }).catchError((e) => throw e);
   }
 
@@ -88,5 +92,12 @@ class LoginScreenCubit extends Cubit<LoginScreenStates> {
   void showPassword() {
     isPasswordVisible = !isPasswordVisible;
     emit(LoginScreenStateShowPassword());
+  }
+
+  Future checkIfLoggedIn() async {
+    await FirebaseFirestore.instance
+        .collection("employees")
+        .doc(_auth.currentUser!.uid)
+        .update({"is loged in": false});
   }
 }
