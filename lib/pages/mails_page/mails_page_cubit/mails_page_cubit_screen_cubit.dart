@@ -48,6 +48,14 @@ class MailsScreenCubit extends Cubit<MailsScreenState> {
     emit(MailScreenCancelVacationState());
   }
 
+  Future getUserName() async {
+    final result = await FirebaseFirestore.instance
+        .collection('employees')
+        .doc(LoginScreenCubit.get(context).getCurrentUser()!.uid)
+        .get();
+    return result.get("name");
+  }
+
   Future<void> sendNotification({title, body}) async {
     try {
       await http.post(
@@ -72,45 +80,12 @@ class MailsScreenCubit extends Cubit<MailsScreenState> {
     } catch (e) {
       rethrow;
     }
-    // try {
-    //   final admins =
-    //       await FirebaseFirestore.instance.collection("admins").get();
-
-    //   List<QueryDocumentSnapshot<Map<String, dynamic>>> adminsTokens =
-    //       admins.docs;
-    //   for (QueryDocumentSnapshot<Map<String, dynamic>> token in adminsTokens) {
-    //     if (token.id == "mails") {
-    //       return;
-    //     }
-    //     await http.post(
-    //       Uri.parse("https://fcm.googleapis.com/fcm/send"),
-    //       headers: {
-    //         "Content-Type": "application/json",
-    //         "Authorization":
-    //             "key=AAAASzdrvRo:APA91bE1BFrA8ZWLsulKdT8S028xuy8iN3SopJvF368Cwz8IODzOc8OmdTmU0dPxmQREj1dRlM6zC6wt9E0Iu8--rPC_cv-4Wy4ZTDNK8v29_htiuGe6wCReRHbcdtNy-KTcNwlwTeOd",
-    //       },
-    //       body: jsonEncode(
-    //         {
-    //           "to": "${token.get("token")}",
-    //           "priority": "high",
-    //           "notification": {
-    //             "title": "$title",
-    //             "body": "$body",
-    //             "subtitle": "",
-    //           }
-    //         },
-    //       ),
-    //     );
-    //   }
-
-    // } catch (e) {
-    //   rethrow;
-    // }
   }
 
   Future senMailToAdmin(context, {dateFrom, dateTo, content, uid}) async {
     if (await Connectivity().checkConnectivity() != ConnectivityResult.none) {
       try {
+        final name = await getUserName();
         emit(MailScreenSendMailLoadingState());
         final adminDuc = FirebaseFirestore.instance
             .collection("admins")
@@ -124,8 +99,8 @@ class MailsScreenCubit extends Cubit<MailsScreenState> {
             .collection("mails")
             .doc();
         await adminDuc.set(Mail(
-                senderName:
-                    await HomeScreenCubit.get(context).myBox.get("name"),
+                senderName: name,
+                // await HomeScreenCubit.get(context).myBox.get("name"),
                 isApproved: "waiting",
                 adminDocUid: adminDuc.id,
                 userDocUid: userDoc.id,
@@ -138,7 +113,8 @@ class MailsScreenCubit extends Cubit<MailsScreenState> {
             .toJson());
 
         await userDoc.set(Mail(
-          senderName: await HomeScreenCubit.get(context).myBox.get("name"),
+          senderName: name,
+          //  await HomeScreenCubit.get(context).myBox.get("name"),
           isApproved: "waiting",
           adminDocUid: adminDuc.id,
           userDocUid: userDoc.id,
@@ -151,35 +127,9 @@ class MailsScreenCubit extends Cubit<MailsScreenState> {
         ).toJson());
 
         await sendNotification(
-            title: HomeScreenCubit.get(context).myBox.get("name"),
+            title: name,
+            // HomeScreenCubit.get(context).myBox.get("name"),
             body: "$content");
-
-        // await FirebaseFirestore.instance
-        //     .collection("admin")
-        //     .doc("ccU8C0XbkiDxwEMhbpF2")
-        //     .collection("mails")
-        //     .add(Mail(
-        //             isApproved: "waiting",
-        //             vacationToDate: dateTo,
-        //             vacationFromDate: dateFrom,
-        //             content: content,
-        //             sendDate: DateTime.now(),
-        //             from: uid,
-        //             to: "ccU8C0XbkiDxwEMhbpF2")
-        //         .toJson());
-        // await FirebaseFirestore.instance
-        //     .collection("employees")
-        //     .doc(LoginScreenCubit.get(context).getCurrentUser()?.uid)
-        //     .collection("mails")
-        //     .add(Mail(
-        //             isApproved: "waiting",
-        //             vacationToDate: dateTo,
-        //             vacationFromDate: dateFrom,
-        //             content: content,
-        //             sendDate: DateTime.now(),
-        //             from: uid,
-        //             to: "ccU8C0XbkiDxwEMhbpF2")
-        //         .toJson());
 
         emit(MailScreenSendMailSuccessState());
       } catch (e) {

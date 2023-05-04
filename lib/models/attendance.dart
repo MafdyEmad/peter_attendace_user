@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:ntp/ntp.dart';
 
 class Attendance {
   final docUid;
@@ -35,8 +36,7 @@ class Attendance {
         'clock in location': clockInLocation,
         'clock out location': clockOutLocation ?? const GeoPoint(0, 0),
         'clock in date': clockInDate,
-        'clock out date':
-            clockOutDate ?? Timestamp.fromMicrosecondsSinceEpoch(0),
+        'clock out date': clockOutDate,
         'doc uid': docUid
       };
 }

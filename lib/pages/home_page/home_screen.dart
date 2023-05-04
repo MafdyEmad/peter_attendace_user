@@ -174,8 +174,12 @@ class HomeScreen extends StatelessWidget {
                         ),
                         Text(
                           snapshot.data!.exists &&
-                                  snapshot.data?["clock out date"] !=
-                                      Timestamp.fromMicrosecondsSinceEpoch(0)
+                                  DateFormat("hh:mm").format(snapshot
+                                          .data?["clock out date"]
+                                          .toDate()) !=
+                                      DateFormat("hh:mm").format(snapshot
+                                          .data?["clock in date"]
+                                          .toDate())
                               ? DateFormat("hh:mm").format(
                                   snapshot.data!["clock out date"].toDate())
                               : "--:--",

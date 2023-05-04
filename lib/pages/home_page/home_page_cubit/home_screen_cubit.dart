@@ -123,6 +123,7 @@ class HomeScreenCubit extends Cubit<HomeScreenState> {
     await docUid
         .set(
       Attendance(
+        clockOutDate: await NTP.now(),
         docUid: docUid.id,
         date: "${DateTime.now().month}, ${DateTime.now().year}",
         clockInLocation: GeoPoint(ltitude, longitude),
