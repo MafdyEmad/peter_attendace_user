@@ -1,118 +1,136 @@
-// import 'package:attendance/component/alert_dialog.dart';
-// import 'package:attendance/constant/constants.dart';
-// import 'package:attendance/pages/settings_page/settings_screen_cubit/settings_screen_cubit.dart';
-// import 'package:attendance/pages/settings_page/settings_screen_cubit/settings_screen_states.dart';
-// import 'package:attendance/pages/sign_in_page/sign_in_cubit/sign_in_cubit.dart';
-// import 'package:attendance/pages/sign_in_page/sign_in_screen.dart';
-// import 'package:attendance/themes.dart';
-// import 'package:flutter/material.dart';
-// import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:attendance/component/alert_dialog.dart';
+import 'package:attendance/component/my_text_form_field.dart';
+import 'package:attendance/constant/constants.dart';
+import 'package:attendance/pages/settings_page/settings_screen_cubit/settings_screen_cubit.dart';
+import 'package:flutter/material.dart';
 
-// class SettingsScreen extends StatelessWidget {
-//   const SettingsScreen({super.key});
+class SettingsScreen extends StatelessWidget {
+  const SettingsScreen({super.key});
 
-//   // @override
-//   // void initState() {
-//   //   SettingsScreenCubit.get(context).switchValue =
-//   //       MyThemes.get().themeBox.get("isDark", defaultValue: false);
-//   //   super.initState();
-//   // }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return BlocListener<SettingsScreenCubit, SettingsScreenStates>(
-//       listener: (context, state) {
-//         if (state is SettingsScreenSignOutLoadingState) {
-//           showMyDialog(
-//             backgroundColor: Colors.transparent,
-//             barrierColor: const Color.fromARGB(100, 0, 0, 0),
-//             context: context,
-//             barrierDismissible: false,
-//             content: WillPopScope(
-//               onWillPop: LoginScreenCubit.get(context).onWillPop,
-//               child: const Center(
-//                 child: CircularProgressIndicator(),
-//               ),
-//             ),
-//           );
-//         } else if (state is SettingsScreenSignOutFailedState) {
-//           Navigator.pop(context);
-//           ScaffoldMessenger.of(context).showSnackBar(
-//             mySnackBar(
-//               context,
-//               content: const Center(
-//                 child: Text(
-//                   "Faild to sign out",
-//                   style: TextStyle(
-//                     color: primaryTextColor,
-//                     fontSize: secondaryFontSize,
-//                   ),
-//                 ),
-//               ),
-//             ),
-//           );
-//         } else if (state is SettingsScreenSignOutSuccessState) {
-//           Navigator.pushReplacement(
-//             context,
-//             MaterialPageRoute(
-//               builder: (context) => const LoginPage(),
-//             ),
-//           );
-//         }
-//       },
-//       child: Padding(
-//         padding: const EdgeInsets.only(top: 40, left: 10, right: 10),
-//         child: Column(
-//           crossAxisAlignment: CrossAxisAlignment.start,
-//           children: [
-//             // Row(
-//             //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//             //   children: [
-//             //     const Text(
-//             //       "Dark mode",
-//             //       style: TextStyle(
-//             //         fontSize: primaryFontSize,
-//             //         color: primaryTextColor,
-//             //       ),
-//             //     ),
-//             //     BlocBuilder<SettingsScreenCubit, SettingsScreenStates>(
-//             //       builder: (context, state) => Switch.adaptive(
-//             //         activeColor: const Color.fromARGB(255, 62, 130, 224),
-//             //         value: SettingsScreenCubit.get(context).switchValue,
-//             //         onChanged: (value) {
-//             //           SettingsScreenCubit.get(context).chnageTheme(value);
-//             //         },
-//             //       ),
-//             //     ),
-//             //   ],
-//             // ),
-//             const SizedBox(
-//               height: 10,
-//             ),
-//             InkWell(
-//               onTap: () async {
-//                 await SettingsScreenCubit.get(context).signOut();
-
-//                 // SettingsScreenCubit.get(context)
-//                 //     .signOut()
-//                 //     .then((value) => Navigator.pushReplacement(
-//                 //           context,
-//                 //           MaterialPageRoute(
-//                 //             builder: (context) => const LoginPage(),
-//                 //           ),
-//                 //         ));
-//               },
-//               child: const Text(
-//                 "Log Out",
-//                 style: TextStyle(
-//                   color: primaryTextColor,
-//                   fontSize: primaryFontSize,
-//                 ),
-//               ),
-//             ),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-// }
+  @override
+  Widget build(BuildContext context) {
+    final TextEditingController currentPasswordController =
+        TextEditingController();
+    final TextEditingController newPasswordController = TextEditingController();
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(left: 10, right: 10, top: 40),
+          child: TextButton(
+            onPressed: () {
+              showMyDialog(
+                backgroundColor: primaryColor,
+                barrierColor: const Color.fromARGB(100, 0, 0, 0),
+                context: context,
+                barrierDismissible: true,
+                content: Form(
+                  key: SettingsScreenCubit.get(context).formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Text(
+                        "Current password",
+                        style: TextStyle(
+                          color: primaryTextColor,
+                          fontSize: primaryFontSize,
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width * 0.9,
+                        height: 100,
+                        child: MyTextFormField(
+                          fillColor: secondaryColor,
+                          filled: true,
+                          controller: currentPasswordController,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return "This field is required";
+                            } else if (value.length < 6) {
+                              return 'Password should be at least 6 characters';
+                            } else {
+                              return null;
+                            }
+                          },
+                        ),
+                      ),
+                      const Text(
+                        "New password",
+                        style: TextStyle(
+                          color: primaryTextColor,
+                          fontSize: primaryFontSize,
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width * 0.9,
+                        height: 100,
+                        child: MyTextFormField(
+                          fillColor: secondaryColor,
+                          filled: true,
+                          controller: newPasswordController,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return "This field is required";
+                            } else if (value.length < 6) {
+                              return 'Password should be at least 6 characters';
+                            } else {
+                              return null;
+                            }
+                          },
+                        ),
+                      ),
+                      SizedBox(
+                        height: MediaQuery.of(context).size.height * 0.06,
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          style: ButtonStyle(
+                            backgroundColor: MaterialStateProperty.all<Color>(
+                              switchColor,
+                            ),
+                          ),
+                          onPressed: () async {
+                            if (SettingsScreenCubit.get(context)
+                                .formKey
+                                .currentState!
+                                .validate()) {
+                              await SettingsScreenCubit(context).chnagePassword(
+                                  currentPasswordController:
+                                      currentPasswordController.text,
+                                  newPasswordController:
+                                      newPasswordController.text);
+                              FocusNode().unfocus();
+                            }
+                          },
+                          child: const Text(
+                            "Change",
+                            style: TextStyle(
+                              fontSize: primaryFontSize,
+                              color: primaryTextColor,
+                            ),
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+              );
+            },
+            child: const Text(
+              "Change password",
+              style: TextStyle(
+                color: primaryTextColor,
+                fontSize: primaryFontSize,
+              ),
+            ),
+          ),
+        )
+      ],
+    );
+  }
+}

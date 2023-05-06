@@ -5,6 +5,8 @@ import 'package:attendance/pages/main_page/main_screen_cubit/main_screen_state.d
 import 'package:attendance/pages/salary_page/salary_screen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../settings_page/ssetting_screen.dart';
+
 class MainScreenCubit extends Cubit<MainScreenStates> {
   final context;
   MainScreenCubit(this.context) : super(MainScreenInitStates());
@@ -12,9 +14,9 @@ class MainScreenCubit extends Cubit<MainScreenStates> {
   List pages = [
     const HomeScreen(),
     const AttendanceScreen(),
-    MailsScreen(),
+    // MailsScreen(),
     const SalaryScreen(),
-    // const SettingsScreen()
+    const SettingsScreen()
   ];
   int pageNumber = 0;
   void changePage(int value) {

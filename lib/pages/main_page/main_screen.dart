@@ -10,9 +10,6 @@ class MainScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // FirebaseMessaging.onMessageOpenedApp.listen((event) {
-    //   MainScreenCubit.get(context).changePage(2);
-    // });
     return BlocBuilder<MainScreenCubit, MainScreenStates>(
       builder: (context, state) => Scaffold(
         backgroundColor: primaryColor,
@@ -36,8 +33,12 @@ class MainScreen extends StatelessWidget {
               Icons.mail,
               color: primaryTextColor,
             ),
+            // Icon(
+            //   Icons.attach_money_sharp,
+            //   color: primaryTextColor,
+            // ),
             Icon(
-              Icons.money,
+              Icons.settings,
               color: primaryTextColor,
             ),
           ],

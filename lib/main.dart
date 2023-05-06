@@ -1,5 +1,6 @@
 import 'package:attendance/pages/mails_page/mails_page_cubit/mails_page_cubit_screen_cubit.dart';
 import 'package:attendance/pages/salary_page/salary_screen_cubit.dart';
+import 'package:attendance/pages/settings_page/settings_screen_cubit/settings_screen_cubit.dart';
 import 'pages/attendanc_page/attendac_page_cubit/attendance_page_cubit_screen_cubit.dart';
 import 'package:attendance/pages/main_page/main_screen_cubit/main_screen_cubit.dart';
 import 'package:attendance/pages/sign_in_page/sign_in_cubit/sign_in_cubit.dart';
@@ -44,9 +45,9 @@ class MyApp extends StatelessWidget {
         BlocProvider(
           create: (context) => MainScreenCubit(context),
         ),
-        // BlocProvider(
-        //   create: (context) => SettingsScreenCubit(context),
-        // ),
+        BlocProvider(
+          create: (context) => SettingsScreenCubit(context),
+        ),
         BlocProvider(
           create: (context) => AttendanceScreenCubit(context),
         ),

@@ -1,13 +1,11 @@
-// abstract class SettingsScreenStates {}
+abstract class SettingsScreenStates {}
 
-// class SettingsScreenInitStates extends SettingsScreenStates {}
+class SettingsScreenInitStates extends SettingsScreenStates {}
 
-// class SettingsScreenChangePage extends SettingsScreenStates {}
+class SettingsScreenChangePasswordLoadingState extends SettingsScreenStates {}
 
-// class SettingsScreenChangeTheme extends SettingsScreenStates {}
+class SettingsScreenChangePasswordFailedState extends SettingsScreenStates {}
 
-// class SettingsScreenSignOutLoadingState extends SettingsScreenStates {}
+class SettingsScreenChangePasswordSuccessState extends SettingsScreenStates {}
 
-// class SettingsScreenSignOutFailedState extends SettingsScreenStates {}
-
-// class SettingsScreenSignOutSuccessState extends SettingsScreenStates {}
+class SettingsScreenWrongPasswordSuccessState extends SettingsScreenStates {}
