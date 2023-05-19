@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:ntp/ntp.dart';
 
 class Attendance {
   final docUid;

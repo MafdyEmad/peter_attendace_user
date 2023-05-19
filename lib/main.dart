@@ -15,7 +15,7 @@ import 'package:flutter/services.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Hive.initFlutter();
-  await Hive.openBox('user');
+  // await Hive.openBox('user');
   await Firebase.initializeApp();
 
   SystemChrome.setPreferredOrientations([

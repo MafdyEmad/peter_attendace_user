@@ -21,14 +21,14 @@ class SalaryScreen extends StatelessWidget {
         appBar: PreferredSize(
           preferredSize: const Size.fromHeight(50.0),
           child: AppBar(
-            bottom: TabBar(
+            bottom: const TabBar(
               indicatorSize: TabBarIndicatorSize.label,
               indicatorWeight: 3,
               indicatorColor: switchColor,
               tabs: [
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: const [
+                  children: [
                     Icon(
                       Icons.event_available_sharp,
                       color: primaryTextColor,
@@ -47,7 +47,14 @@ class SalaryScreen extends StatelessWidget {
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: const [
+                  children: [
+                    Text(
+                      "-",
+                      style: TextStyle(
+                        color: primaryTextColor,
+                        fontSize: primaryFontSize,
+                      ),
+                    ),
                     Icon(
                       Icons.attach_money,
                       color: primaryTextColor,
@@ -59,7 +66,7 @@ class SalaryScreen extends StatelessWidget {
                       "Deductions",
                       style: TextStyle(
                         color: primaryTextColor,
-                        fontSize: secondaryFontSize,
+                        fontSize: primaryFontSize,
                       ),
                     ),
                   ],
@@ -264,52 +271,52 @@ class SalaryScreen extends StatelessWidget {
                       },
                     ),
                   ),
-                  const Spacer(),
-                  Expanded(
-                    flex: 1,
-                    child: StreamBuilder(
-                      stream: SalaryScreenCubit.get(context).getTotalSalary(),
-                      builder: (context, snapshout) {
-                        if (snapshout.hasData) {
-                          return Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Expanded(
-                                child: Text(
-                                  "Total salary : ${snapshout.data!.get("total salary")} EGP",
-                                  style: const TextStyle(
-                                      color: primaryTextColor,
-                                      fontSize: primaryFontSize),
-                                ),
-                              ),
-                              Expanded(
-                                child: Text(
-                                  "Total working hours : ${(snapshout.data!.get("total working hours") / 60).toInt()} : ${(snapshout.data!.get("total working hours") % 60).toInt()}",
-                                  style: const TextStyle(
-                                      color: primaryTextColor,
-                                      fontSize: primaryFontSize),
-                                ),
-                              ),
-                            ],
-                          );
-                        } else if (snapshout.hasError) {
-                          return const Text(
-                            "There is an error",
-                            style: TextStyle(
-                                color: primaryTextColor,
-                                fontSize: primaryFontSize),
-                          );
-                        } else {
-                          return const Text(
-                            "Loading..",
-                            style: TextStyle(
-                                color: primaryTextColor,
-                                fontSize: primaryFontSize),
-                          );
-                        }
-                      },
-                    ),
-                  )
+                  // const Spacer(),
+                  // Expanded(
+                  //   flex: 1,
+                  //   child: StreamBuilder(
+                  //     stream: SalaryScreenCubit.get(context).getTotalSalary(),
+                  //     builder: (context, snapshout) {
+                  //       if (snapshout.hasData) {
+                  //         return Column(
+                  //           crossAxisAlignment: CrossAxisAlignment.start,
+                  //           children: [
+                  //             Expanded(
+                  //               child: Text(
+                  //                 "Total salary : ${snapshout.data!.get("total salary")} EGP",
+                  //                 style: const TextStyle(
+                  //                     color: primaryTextColor,
+                  //                     fontSize: primaryFontSize),
+                  //               ),
+                  //             ),
+                  //             Expanded(
+                  //               child: Text(
+                  //                 "Total working hours : ${(snapshout.data!.get("total working hours") / 60).toInt()} : ${(snapshout.data!.get("total working hours") % 60).toInt()}",
+                  //                 style: const TextStyle(
+                  //                     color: primaryTextColor,
+                  //                     fontSize: primaryFontSize),
+                  //               ),
+                  //             ),
+                  //           ],
+                  //         );
+                  //       } else if (snapshout.hasError) {
+                  //         return const Text(
+                  //           "There is an error",
+                  //           style: TextStyle(
+                  //               color: primaryTextColor,
+                  //               fontSize: primaryFontSize),
+                  //         );
+                  //       } else {
+                  //         return const Text(
+                  //           "Loading..",
+                  //           style: TextStyle(
+                  //               color: primaryTextColor,
+                  //               fontSize: primaryFontSize),
+                  //         );
+                  //       }
+                  //     },
+                  //   ),
+                  // ),
                 ],
               ),
             ),

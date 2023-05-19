@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'package:attendance/pages/home_page/home_page_cubit/home_screen_cubit.dart';
 import 'package:http/http.dart' as http;
 import 'package:attendance/constant/constants.dart';
 import 'package:attendance/models/mail_model.dart';

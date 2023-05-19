@@ -21,7 +21,7 @@ class LoginScreenCubit extends Cubit<LoginScreenStates> {
 
   bool hasInternet = false;
   bool isPasswordVisible = false;
-  Box myBox = Hive.box("user");
+  // Box myBox = Hive.box("user");
 
   Future signIn(context,
       {required String email, required String password}) async {
@@ -40,17 +40,17 @@ class LoginScreenCubit extends Cubit<LoginScreenStates> {
               .catchError((e) {
             LoginScreenStateFailed(error: "Error");
           });
-          saveUser();
+          // saveUser();
         },
       ).catchError((e) {
         emit(LoginScreenStateFailed(error: e.toString()));
       });
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
           content: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: const [
+            children: [
               Text('No internet connection'),
               Icon(
                 Icons.wifi,
@@ -63,15 +63,15 @@ class LoginScreenCubit extends Cubit<LoginScreenStates> {
     }
   }
 
-  Future saveUser() async {
-    final uid = await FirebaseFirestore.instance
-        .collection("employees")
-        .doc(getCurrentUser()?.uid)
-        .get()
-        .then((value) async {
-      // await myBox.put("name", value.get("name"));
-    }).catchError((e) => throw e);
-  }
+  // Future saveUser() async {
+  //   final uid = await FirebaseFirestore.instance
+  //       .collection("employees")
+  //       .doc(getCurrentUser()?.uid)
+  //       .get()
+  //       .then((value) async {
+  //     // await myBox.put("name", value.get("name"));
+  //   }).catchError((e) => throw e);
+  // }
 
   Future saveTheToken({uid}) async {
     FirebaseMessaging messaging = FirebaseMessaging.instance;

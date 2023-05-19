@@ -77,9 +77,12 @@ class ClockButton extends StatelessWidget {
               ));
         } else {
           return SizedBox(
+              width: MediaQuery.of(context).size.width * .4,
               height: MediaQuery.of(context).size.height * .32,
-              child: const CircularProgressIndicator(
-                color: switchColor,
+              child: const Center(
+                child: CircularProgressIndicator(
+                  color: switchColor,
+                ),
               ));
         }
       },

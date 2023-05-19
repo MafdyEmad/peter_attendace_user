@@ -6,7 +6,6 @@ import 'package:attendance/pages/attendanc_page/attendac_page_cubit/attendac_pag
 import 'package:attendance/pages/attendanc_page/attendac_page_cubit/attendance_page_cubit_screen_cubit.dart';
 import 'package:attendance/pages/sign_in_page/sign_in_cubit/sign_in_cubit.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -202,13 +201,14 @@ class AttendanceScreen extends StatelessWidget {
                     );
                   }
                   return const Center(
-                      child: CircularProgressIndicator(
-                    color: switchColor,
-                  ));
+                    child: CircularProgressIndicator(
+                      color: switchColor,
+                    ),
+                  );
                 },
               ),
             ),
-          )
+          ),
         ],
       ),
     );

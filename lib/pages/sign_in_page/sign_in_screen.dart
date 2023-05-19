@@ -178,12 +178,12 @@ class LoginPage extends StatelessWidget {
                                 ),
                               ),
                               child: state is LoginScreenStateLoading
-                                  ? Row(
+                                  ? const Row(
                                       mainAxisAlignment:
                                           MainAxisAlignment.center,
                                       crossAxisAlignment:
                                           CrossAxisAlignment.center,
-                                      children: const [
+                                      children: [
                                         SizedBox(
                                           width: 20,
                                           height: 20,
