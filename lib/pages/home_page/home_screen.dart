@@ -2,7 +2,6 @@ import 'package:attendance/component/alert_dialog.dart';
 import 'package:attendance/component/clock.dart';
 import 'package:attendance/component/clock_button.dart';
 import 'package:attendance/constant/constants.dart';
-import 'package:attendance/main.dart';
 import 'package:attendance/paints/working_hours.dart';
 import 'package:attendance/pages/home_page/home_page_cubit/home_screen_states.dart';
 import 'package:attendance/pages/home_page/home_page_cubit/home_screen_cubit.dart';
@@ -217,7 +216,7 @@ class HomeScreen extends StatelessWidget {
                             height: 10,
                           ),
                           Text(
-                            snapshot.data!.docs.first.exists &&
+                            snapshot.data!.docs.isNotEmpty &&
                                     snapshot.data?.docs
                                             .first["clock in date"] !=
                                         null
@@ -252,7 +251,7 @@ class HomeScreen extends StatelessWidget {
                             height: 10,
                           ),
                           Text(
-                            snapshot.data!.docs.first.exists &&
+                            snapshot.data!.docs.isNotEmpty &&
                                     DateFormat("hh:mm:ss").format(snapshot
                                             .data?.docs.first["clock out date"]
                                             .toDate()) !=
@@ -287,7 +286,7 @@ class HomeScreen extends StatelessWidget {
                             height: 10,
                           ),
                           Text(
-                            snapshot.data!.docs.first.exists &&
+                            snapshot.data!.docs.isNotEmpty &&
                                     snapshot.data?.docs
                                             .first["working hours"] !=
                                         null
