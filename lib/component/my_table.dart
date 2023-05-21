@@ -18,6 +18,7 @@ class MyTable extends StatelessWidget {
   Widget build(BuildContext context) {
     final isEmpty = DateFormat("h:mm:ss a").format(clockOutDate.toDate()) !=
         DateFormat("h:mm:ss a").format(clockInDate.toDate());
+
     return Table(
       children: [
         TableRow(

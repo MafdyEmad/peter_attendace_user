@@ -7,14 +7,13 @@ import 'package:attendance/pages/sign_in_page/sign_in_cubit/sign_in_cubit.dart';
 import 'pages/home_page/home_page_cubit/home_screen_cubit.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 import 'package:attendance/wraper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Hive.initFlutter();
+  // await Hive.initFlutter();
   // await Hive.openBox('user');
   await Firebase.initializeApp();
 

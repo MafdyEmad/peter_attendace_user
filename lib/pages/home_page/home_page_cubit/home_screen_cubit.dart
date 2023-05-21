@@ -179,11 +179,6 @@ class HomeScreenCubit extends Cubit<HomeScreenState> {
 
     try {
       Duration workingHours = time.difference(await getClocInDate());
-      // _workingHours > Duration.zero
-      // ? _workingHours = _workingHours
-      // : _workingHours = Duration(
-      //     hours: _workingHours.inHours + 24,
-      //     minutes: _workingHours.inMinutes % 60);
       await FirebaseFirestore.instance
           .collection("employees")
           .doc("$uid")
@@ -222,19 +217,6 @@ class HomeScreenCubit extends Cubit<HomeScreenState> {
         }).catchError((e) {
           emit(HomeScreenClockStateFailed());
         });
-        // await myBox.put("clock out", DateTime.now()).catchError((e) {
-        //   print("box error");
-        // });
-        // myBox
-        //     .put("workingHours",
-        //         "${_workingHours.inHours}:${_workingHours.inMinutes.remainder(60)}")
-        //     .then((value) async =>
-        //         await updateTotalWorkingHours(_workingHours).then(
-        //           (value) async {},
-        //         ))
-        //     .catchError((e) {
-        //   print("box error");
-        // });
       }).catchError((e) {
         emit(HomeScreenClockStateFailed());
       });
@@ -457,12 +439,16 @@ class HomeScreenCubit extends Cubit<HomeScreenState> {
   }
 
   Future getSalary() async {
-    final doc = await FirebaseFirestore.instance
-        .collection("employees")
-        .doc(LoginScreenCubit.get(context).getCurrentUser()!.uid)
-        .get();
+    try {
+      final doc = await FirebaseFirestore.instance
+          .collection("employees")
+          .doc(LoginScreenCubit.get(context).getCurrentUser()!.uid)
+          .get();
 
-    return (doc.get("salary") / 60);
+      return (doc.get("salary") / 60);
+    } catch (e) {
+      rethrow;
+    }
   }
 
   Future getTotalWorkingHours() async {
@@ -474,7 +460,7 @@ class HomeScreenCubit extends Cubit<HomeScreenState> {
 
       return doc.get("total working hours");
     } catch (e) {
-      print("eeeeee $e");
+      rethrow;
     }
   }
 
@@ -488,41 +474,36 @@ class HomeScreenCubit extends Cubit<HomeScreenState> {
       });
 
       await updateTotalSalary(
-          salary: await getSalary(),
-          workingHours: await getTotalWorkingHours());
+          salary: await getSalary(), workingHours: time.inMinutes);
     } catch (e) {
-      print(e);
+      emit(HomeScreenClockStateFailed());
     }
   }
 
-/*
- Future updateTotalWorkingHours() async {
-    try {
-      String _workingHours = myBox.get("workingHours");
-      if (_workingHours != "--:--") {
-        _workingHours = _workingHours.replaceAll(":", ".");
-       
-
-        final doc = await FirebaseFirestore.instance
-            .collection("employees")
-            .doc(LoginScreenCubit.get(context).getCurrentUser()!.uid)
-            .update({
-          "total working hours":
-              await getTotalWorkingHours() + double.parse(_workingHours)
-        });
-      }
-      await updateTotalSalary(
-          salary: await getSalary(),
-          workingHours: await getTotalWorkingHours());
-    } catch (e) {}
-  }*/
   Future updateTotalSalary({workingHours, salary}) async {
     try {
       await FirebaseFirestore.instance
           .collection("employees")
           .doc(LoginScreenCubit.get(context).getCurrentUser()!.uid)
-          .update({"total salary": (salary * workingHours).round()});
-    } catch (e) {}
+          .update({
+        "total salary": await getTotalSalary() + (salary * workingHours).round()
+      });
+    } catch (e) {
+      emit(HomeScreenClockStateFailed());
+    }
+  }
+
+  Future getTotalSalary({workingHours, salary}) async {
+    try {
+      final result = await FirebaseFirestore.instance
+          .collection("employees")
+          .doc(LoginScreenCubit.get(context).getCurrentUser()!.uid)
+          .get();
+
+      return result.get("total salary");
+    } catch (e) {
+      rethrow;
+    }
   }
 
   Stream<DocumentSnapshot<Map<String, dynamic>>> isHasPermissionToLogin() {
